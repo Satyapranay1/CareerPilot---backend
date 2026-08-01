@@ -1,0 +1,21 @@
+services:
+
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: careerpilot-postgres
+
+    environment:
+      POSTGRES_DB: careerpilot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - careerpilot_postgres_data:/var/lib/postgresql
+
+    restart: unless-stopped
+
+volumes:
+  careerpilot_postgres_data:

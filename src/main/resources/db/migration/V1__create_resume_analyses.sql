@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM vector_store;
