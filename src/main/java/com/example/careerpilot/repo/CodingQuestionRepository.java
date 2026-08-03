@@ -17,6 +17,8 @@ public interface CodingQuestionRepository
             Collection<Long> topicIds
     );
 
+    long count();
+
     @Query("""
             SELECT parent.id, COUNT(q.id)
             FROM CodingQuestion q
