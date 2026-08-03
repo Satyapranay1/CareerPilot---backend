@@ -55,6 +55,18 @@ public interface UserQuestionProgressRepository
     );
 
     @Query("""
+SELECT DATE(p.solvedAt),COUNT(p.id)
+FROM UserQuestionProgress p
+WHERE p.user.id=:userId
+GROUP BY DATE(p.solvedAt)
+ORDER BY DATE(p.solvedAt)
+""")
+    List<Object[]> weeklySolved(Long userId);
+
+    List<UserQuestionProgress>
+    findByUserIdOrderBySolvedAtAsc(Long userId);
+
+    @Query("""
             SELECT COUNT(p.id)
             FROM UserQuestionProgress p
             WHERE p.user.id = :userId
@@ -76,4 +88,6 @@ public interface UserQuestionProgressRepository
             @Param("userId") Long userId,
             @Param("questionId") Long questionId
     );
+
+    List<UserQuestionProgress> findByUserIdOrderBySolvedAtDesc(Long userId);
 }
