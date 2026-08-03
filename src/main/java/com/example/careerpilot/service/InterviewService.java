@@ -33,9 +33,9 @@ public class InterviewService {
     private final ObjectMapper objectMapper;
 
 
-    // ==========================================
-    // START INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @Transactional
     public InterviewResponse startInterview(
@@ -104,9 +104,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // GENERATE NEXT QUESTION
-    // ==========================================
+    
+    
+    
 
     @Transactional
     public QuestionResponse generateQuestion(
@@ -130,9 +130,9 @@ public class InterviewService {
                 existingQuestions.size() + 1;
 
 
-        // ======================================
-        // QUESTION 1
-        // ======================================
+        
+        
+        
 
         if (questionNumber == 1) {
 
@@ -164,9 +164,9 @@ public class InterviewService {
         }
 
 
-        // ======================================
-        // Q2+ REQUIRES PREVIOUS ANSWER
-        // ======================================
+        
+        
+        
 
         InterviewQuestion previousQuestion =
                 existingQuestions.get(
@@ -186,9 +186,9 @@ public class InterviewService {
                         );
 
 
-        // ======================================
-        // DETERMINE TYPE
-        // ======================================
+        
+        
+        
 
         InterviewType questionType =
                 determineQuestionType(
@@ -197,9 +197,9 @@ public class InterviewService {
                 );
 
 
-        // ======================================
-        // BUILD CONVERSATION HISTORY
-        // ======================================
+        
+        
+        
 
         String interviewHistory =
                 buildInterviewHistory(
@@ -207,9 +207,9 @@ public class InterviewService {
                 );
 
 
-        // ======================================
-        // GENERATE ADAPTIVE QUESTION
-        // ======================================
+        
+        
+        
 
         String generatedQuestion =
                 interviewAiService
@@ -259,9 +259,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // BUILD INTERVIEW HISTORY
-    // ==========================================
+    
+    
+    
 
     private String buildInterviewHistory(
             Long sessionId
@@ -327,9 +327,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // SUBMIT ANSWER
-    // ==========================================
+    
+    
+    
 
     @Transactional
     public AnswerEvaluationResponse submitAnswer(
@@ -359,9 +359,9 @@ public class InterviewService {
                         );
 
 
-        // ==========================================
-        // RETURN EXISTING ANSWER
-        // ==========================================
+        
+        
+        
 
         Optional<InterviewAttempt> existingAttempt =
                 attemptRepository
@@ -377,9 +377,9 @@ public class InterviewService {
         }
 
 
-        // ==========================================
-        // VALIDATE ANSWER
-        // ==========================================
+        
+        
+        
 
         if (answer == null
                 || answer.isBlank()) {
@@ -394,9 +394,9 @@ public class InterviewService {
                 answer.trim();
 
 
-        // ==========================================
-        // AI EVALUATION
-        // ==========================================
+        
+        
+        
 
         String evaluation;
 
@@ -429,9 +429,9 @@ public class InterviewService {
                 );
 
 
-        // ==========================================
-        // EXTRACT COMPONENT SCORES
-        // ==========================================
+        
+        
+        
 
         Double correctness =
                 score(
@@ -488,9 +488,9 @@ public class InterviewService {
                 );
 
 
-        // ==========================================
-        // CALCULATE SCORE IN JAVA
-        // ==========================================
+        
+        
+        
 
         double overallScore;
 
@@ -521,9 +521,9 @@ public class InterviewService {
         }
 
 
-        // ==========================================
-        // CREATE ATTEMPT
-        // ==========================================
+        
+        
+        
 
         InterviewAttempt attempt =
                 InterviewAttempt.builder()
@@ -615,9 +615,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // BEHAVIOURAL SCORE
-    // ==========================================
+    
+    
+    
 
     private double calculateBehaviouralScore(
             InterviewQuestion question,
@@ -629,19 +629,7 @@ public class InterviewService {
             Double starResult
     ) {
 
-        /*
-         * Introduction is NOT a STAR question.
-         *
-         * For Q1:
-         *
-         * Tell me about yourself
-         *
-         * score using clarity + relevance.
-         *
-         * The AI evaluates experience presentation,
-         * skill alignment and career direction in
-         * its feedback.
-         */
+        
 
         if (isIntroductionQuestion(question)) {
 
@@ -652,13 +640,7 @@ public class InterviewService {
         }
 
 
-        /*
-         * Normal behavioural questions use:
-         *
-         * STAR + clarity + relevance.
-         *
-         * Null values are ignored.
-         */
+        
 
         return calculateAverage(
                 starSituation,
@@ -671,9 +653,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // INTRODUCTION DETECTION
-    // ==========================================
+    
+    
+    
 
     private boolean isIntroductionQuestion(
             InterviewQuestion question
@@ -715,9 +697,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // AVERAGE NON-NULL SCORES
-    // ==========================================
+    
+    
+    
 
     private double calculateAverage(
             Double... scores
@@ -758,9 +740,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // MANUAL FOLLOW-UP
-    // ==========================================
+    
+    
+    
 
     @Transactional
     public QuestionResponse generateFollowUp(
@@ -873,9 +855,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // COMPLETE INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @Transactional
     public InterviewReportResponse completeInterview(
@@ -1019,9 +1001,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // HISTORY
-    // ==========================================
+    
+    
+    
 
     @Transactional(readOnly = true)
     public List<InterviewResponse> getHistory(
@@ -1042,9 +1024,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // GET INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @Transactional(readOnly = true)
     public InterviewResponse getInterview(
@@ -1063,9 +1045,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // GET QUESTIONS
-    // ==========================================
+    
+    
+    
 
     @Transactional(readOnly = true)
     public List<QuestionResponse> getQuestions(
@@ -1093,9 +1075,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // DETERMINE QUESTION TYPE
-    // ==========================================
+    
+    
+    
 
     private InterviewType determineQuestionType(
             InterviewSession session,
@@ -1124,17 +1106,7 @@ public class InterviewService {
         }
 
 
-        /*
-         * MIXED
-         *
-         * Q1 -> Behavioural introduction
-         * Q2 -> Technical
-         * Q3 -> Technical
-         * Q4 -> Behavioural
-         * Q5 -> Technical
-         * Q6 -> Technical
-         * Q7 -> Behavioural
-         */
+        
 
         return (questionNumber - 1) % 3 == 0
 
@@ -1144,9 +1116,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // SESSION OWNERSHIP
-    // ==========================================
+    
+    
+    
 
     private InterviewSession getSession(
             Long sessionId,
@@ -1194,9 +1166,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // VALIDATION
-    // ==========================================
+    
+    
+    
 
     private void validateStartRequest(
             StartInterviewRequest request
@@ -1245,9 +1217,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // AI JSON PARSING
-    // ==========================================
+    
+    
+    
 
     private JsonNode parseEvaluation(
             String response
@@ -1315,9 +1287,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // SCORE EXTRACTION
-    // ==========================================
+    
+    
+    
 
     private Double score(
             JsonNode json,
@@ -1389,9 +1361,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // MAPPERS
-    // ==========================================
+    
+    
+    
 
     private InterviewResponse mapSession(
             InterviewSession session
@@ -1482,9 +1454,9 @@ public class InterviewService {
     }
 
 
-    // ==========================================
-    // HELPERS
-    // ==========================================
+    
+    
+    
 
     private String clean(
             String value

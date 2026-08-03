@@ -36,9 +36,9 @@ public class JwtUtils {
     }
 
 
-    // ==========================================
-    // GENERATE TOKEN
-    // ==========================================
+    
+    
+    
 
     public String generateToken(
             Long userId
@@ -71,9 +71,9 @@ public class JwtUtils {
     }
 
 
-    // ==========================================
-    // EXTRACT USER ID
-    // ==========================================
+    
+    
+    
 
     public Long extractUserId(
             String token
@@ -88,9 +88,9 @@ public class JwtUtils {
     }
 
 
-    // ==========================================
-    // VALIDATE TOKEN
-    // ==========================================
+    
+    
+    
 
     public boolean isTokenValid(
             String token
@@ -118,9 +118,9 @@ public class JwtUtils {
     }
 
 
-    // ==========================================
-    // CLAIMS
-    // ==========================================
+    
+    
+    
 
     private Claims extractClaims(
             String token

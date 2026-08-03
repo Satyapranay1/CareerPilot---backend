@@ -34,17 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // ==========================================
-        // 1. GET AUTHORIZATION HEADER
-        // ==========================================
+        
+        
+        
 
         String authHeader =
                 request.getHeader("Authorization");
 
 
-        // ==========================================
-        // 2. CHECK BEARER TOKEN
-        // ==========================================
+        
+        
+        
 
         if (authHeader == null
                 || !authHeader.startsWith("Bearer ")) {
@@ -58,17 +58,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
 
-        // ==========================================
-        // 3. EXTRACT JWT
-        // ==========================================
+        
+        
+        
 
         String token =
                 authHeader.substring(7);
 
 
-        // ==========================================
-        // 4. VALIDATE JWT
-        // ==========================================
+        
+        
+        
 
         if (!jwtUtils.isTokenValid(token)) {
 
@@ -81,9 +81,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
 
-        // ==========================================
-        // 5. CHECK EXISTING AUTHENTICATION
-        // ==========================================
+        
+        
+        
 
         if (SecurityContextHolder
                 .getContext()
@@ -100,17 +100,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
 
-            // ==========================================
-            // 6. EXTRACT USER ID FROM JWT
-            // ==========================================
+            
+            
+            
 
             Long userId =
                     jwtUtils.extractUserId(token);
 
 
-            // ==========================================
-            // 7. FIND USER
-            // ==========================================
+            
+            
+            
 
             User user =
                     userRepo
@@ -120,9 +120,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (user != null) {
 
-                // ==========================================
-                // 8. CREATE USER DETAILS
-                // ==========================================
+                
+                
+                
 
                 UserDetails userDetails =
                         org.springframework.security
@@ -146,9 +146,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 .build();
 
 
-                // ==========================================
-                // 9. CREATE AUTHENTICATION
-                // ==========================================
+                
+                
+                
 
                 UsernamePasswordAuthenticationToken
                         authenticationToken =
@@ -171,9 +171,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
 
-                // ==========================================
-                // 10. STORE AUTHENTICATION
-                // ==========================================
+                
+                
+                
 
                 SecurityContextHolder
                         .getContext()
@@ -184,20 +184,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception ignored) {
 
-            /*
-             * Invalid token subject,
-             * missing user, etc.
-             *
-             * Authentication remains empty.
-             * Spring Security will reject protected
-             * endpoints.
-             */
+            
         }
 
 
-        // ==========================================
-        // 11. CONTINUE REQUEST
-        // ==========================================
+        
+        
+        
 
         filterChain.doFilter(
                 request,

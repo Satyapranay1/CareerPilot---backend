@@ -36,17 +36,17 @@ public class InterviewAttempt {
     private String userAnswer;
 
 
-    // ==============================
-    // COMMON SCORE
-    // ==============================
+    
+    
+    
 
     @Column(name = "score")
     private Double score;
 
 
-    // ==============================
-    // TECHNICAL EVALUATION
-    // ==============================
+    
+    
+    
 
     @Column(name = "correctness")
     private Double correctness;
@@ -64,9 +64,9 @@ public class InterviewAttempt {
     private Double relevance;
 
 
-    // ==============================
-    // BEHAVIOURAL / STAR
-    // ==============================
+    
+    
+    
 
     @Column(name = "star_situation")
     private Double starSituation;
@@ -81,9 +81,9 @@ public class InterviewAttempt {
     private Double starResult;
 
 
-    // ==============================
-    // AI FEEDBACK
-    // ==============================
+    
+    
+    
 
     @Column(
             name = "strengths",

@@ -47,9 +47,9 @@ public class CodingService {
         this.userRepository = userRepository;
     }
 
-    // ---------------------------------------------------------
-    // CATALOG
-    // ---------------------------------------------------------
+    
+    
+    
 
     @Transactional(readOnly = true)
     public CodingResponse getCatalog(
@@ -111,9 +111,9 @@ public class CodingService {
         );
     }
 
-    // ---------------------------------------------------------
-    // ONE TOPIC
-    // ---------------------------------------------------------
+    
+    
+    
 
     @Transactional(readOnly = true)
     public CodingResponse.TopicDetails getTopic(
@@ -213,9 +213,9 @@ public class CodingService {
         );
     }
 
-    // ---------------------------------------------------------
-    // SEARCH + FILTER + PAGINATION
-    // ---------------------------------------------------------
+    
+    
+    
 
     @Transactional(readOnly = true)
     public CodingResponse.QuestionPage getQuestions(
@@ -304,7 +304,7 @@ public class CodingService {
             List<Predicate> predicates =
                     new ArrayList<>();
 
-            // Search title
+            
             if (search != null &&
                     !search.isBlank()) {
 
@@ -322,7 +322,7 @@ public class CodingService {
                 );
             }
 
-            // Difficulty
+            
             if (difficulty != null) {
 
                 predicates.add(
@@ -333,7 +333,7 @@ public class CodingService {
                 );
             }
 
-            // Platform
+            
             if (platform != null) {
 
                 predicates.add(
@@ -344,17 +344,7 @@ public class CodingService {
                 );
             }
 
-            /*
-             * topicId can be:
-             *
-             * root topic
-             * OR
-             * component
-             *
-             * Example:
-             * 3   -> Binary Search
-             * 304 -> Binary Search on Answers
-             */
+            
             if (topicId != null) {
 
                 predicates.add(
@@ -376,16 +366,9 @@ public class CodingService {
                 );
             }
 
-            /*
-             * PostgreSQL TEXT[] company filter.
-             *
-             * Hibernate/JPA array querying through
-             * Criteria API is unnecessarily messy.
-             *
-             * We'll handle company separately below.
-             */
+            
 
-            // Solved / unsolved
+            
             if (solved != null) {
 
                 if (solved) {
@@ -428,9 +411,9 @@ public class CodingService {
         };
     }
 
-    // ---------------------------------------------------------
-    // SOLVED CHECKBOX
-    // ---------------------------------------------------------
+    
+    
+    
 
     @Transactional
     public boolean setSolved(
@@ -478,9 +461,9 @@ public class CodingService {
         return solved;
     }
 
-    // ---------------------------------------------------------
-    // PROGRESS
-    // ---------------------------------------------------------
+    
+    
+    
 
     @Transactional(readOnly = true)
     public CodingResponse.Progress getProgress(
@@ -592,9 +575,9 @@ public class CodingService {
         );
     }
 
-    // ---------------------------------------------------------
-    // HELPERS
-    // ---------------------------------------------------------
+    
+    
+    
 
     private CodingResponse.Component buildComponent(
             CodingTopic component,

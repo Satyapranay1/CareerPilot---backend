@@ -43,34 +43,34 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // CORS Preflight
+                        
                         .requestMatchers(HttpMethod.OPTIONS, "/**")
                         .permitAll()
 
-                        // Public Authentication APIs
+                        
                         .requestMatchers(
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/login"
                         )
                         .permitAll()
 
-                        // Resume Analyzer
+                        
                         .requestMatchers("/api/v1/resumes/**")
                         .authenticated()
 
-                        // Interview Module
+                        
                         .requestMatchers("/api/interviews/**")
                         .authenticated()
 
-                        // Questions Module
+                        
                         .requestMatchers("/api/questions/**")
                         .authenticated()
 
-                        // Profile Module
+                        
                         .requestMatchers("/api/profile/**")
                         .authenticated()
 
-                        // Everything else
+                        
                         .anyRequest()
                         .authenticated()
                 )
@@ -89,8 +89,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:3000"
+                "http:
+                "http:
         ));
 
         configuration.setAllowedMethods(List.of(

@@ -23,9 +23,9 @@ public class InterviewController {
     private final UserRepo userRepository;
 
 
-    // ==========================================
-    // START INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,9 +46,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // GENERATE NEXT QUESTION
-    // ==========================================
+    
+    
+    
 
     @PostMapping("/{sessionId}/questions")
     public QuestionResponse generateQuestion(
@@ -68,9 +68,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // SUBMIT ANSWER
-    // ==========================================
+    
+    
+    
 
     @PostMapping(
             "/{sessionId}/questions/{questionId}/answer"
@@ -96,9 +96,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // FOLLOW-UP
-    // ==========================================
+    
+    
+    
 
     @PostMapping(
             "/{sessionId}/questions/{questionId}/follow-up"
@@ -122,9 +122,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // COMPLETE INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @PostMapping("/{sessionId}/complete")
     public InterviewReportResponse completeInterview(
@@ -144,9 +144,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // HISTORY
-    // ==========================================
+    
+    
+    
 
     @GetMapping
     public List<InterviewResponse> getHistory(
@@ -162,9 +162,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // SINGLE INTERVIEW
-    // ==========================================
+    
+    
+    
 
     @GetMapping("/{sessionId}")
     public InterviewResponse getInterview(
@@ -184,9 +184,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // INTERVIEW QUESTIONS
-    // ==========================================
+    
+    
+    
 
     @GetMapping("/{sessionId}/questions")
     public List<QuestionResponse> getQuestions(
@@ -206,9 +206,9 @@ public class InterviewController {
     }
 
 
-    // ==========================================
-    // CURRENT USER
-    // ==========================================
+    
+    
+    
 
     private User getCurrentUser(
             Authentication authentication

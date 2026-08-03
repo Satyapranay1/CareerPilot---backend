@@ -21,7 +21,7 @@ public class UserService {
         }
 
         try {
-            String token = header.substring(7); // remove "Bearer "
+            String token = header.substring(7); 
             Integer userId = Math.toIntExact(jwtUtils.extractUserId(token));
             return userRepo.findById(Long.valueOf(userId));
         } catch (Exception e) {

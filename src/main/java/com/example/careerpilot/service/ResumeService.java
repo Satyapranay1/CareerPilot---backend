@@ -51,15 +51,15 @@ public class ResumeService {
 
             log.info("Starting resume analysis");
 
-            // Save uploaded PDF
+            
             String filePath = saveFile(file);
 
-            // Extract text
+            
             String resumeText = pdfParser.extractText(file);
 
             log.info("Resume parsed successfully");
 
-            // Retrieve Knowledge
+            
             KnowledgeContext knowledge =
                     knowledgeService.getKnowledge(
                             company,
@@ -67,7 +67,7 @@ public class ResumeService {
                             jobDescription
                     );
 
-            // Load Prompt
+            
             String prompt = buildPrompt(
                     knowledge,
                     resumeText
@@ -79,7 +79,7 @@ public class ResumeService {
 
             log.info("Calling Llama");
 
-            // Call LLM
+            
             String aiResponse = chatClient
                     .prompt()
                     .user(prompt)

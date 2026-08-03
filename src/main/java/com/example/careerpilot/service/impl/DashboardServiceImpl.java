@@ -40,15 +40,15 @@ public class DashboardServiceImpl implements DashboardService {
                 .weeklyActivity(buildWeeklyActivity(userId))
                 .topicDistribution(buildTopicDistribution(userId))
                 .skillRadar(buildSkillRadar(userId))
-//                .leaderboard(buildLeaderboard(userId))
+
                 .activities(buildActivities(userId))
                 .upcomingTasks(buildUpcomingTasks(userId))
                 .build();
     }
 
-    // ==========================================================
-    // HERO SECTION
-    // ==========================================================
+    
+    
+    
 
     private HeroSectionDto buildHero(Long userId) {
 
@@ -108,9 +108,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    // ==========================================================
-    // KPI
-    // ==========================================================
+    
+    
+    
 
     private DashboardMetricsDto buildMetrics(Long userId) {
 
@@ -226,9 +226,9 @@ public class DashboardServiceImpl implements DashboardService {
         );
     }
 
-    // ==========================================================
-    // INTERVIEW TREND
-    // ==========================================================
+    
+    
+    
 
     private List<ReadinessTrendDto> buildInterviewTrend(Long userId) {
 
@@ -274,9 +274,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .toList();
     }
 
-    // ==========================================================
-    // WEEKLY ACTIVITY
-    // ==========================================================
+    
+    
+    
 
     private List<WeeklyActivityDto> buildWeeklyActivity(Long userId) {
 
@@ -296,9 +296,9 @@ public class DashboardServiceImpl implements DashboardService {
                             .build());
         }
 
-        // -----------------------------
-        // Coding Activity
-        // -----------------------------
+        
+        
+        
 
         List<UserQuestionProgress> solved =
                 progressRepository
@@ -326,9 +326,9 @@ public class DashboardServiceImpl implements DashboardService {
                     dto.getHoursStudied() + 0.25);
         }
 
-        // -----------------------------
-        // Interview Activity
-        // -----------------------------
+        
+        
+        
 
         List<InterviewSession> interviews =
                 interviewSessionRepository
@@ -362,9 +362,9 @@ public class DashboardServiceImpl implements DashboardService {
         return new ArrayList<>(weeklyMap.values());
     }
 
-    // ==========================================================
-    // TOPIC DISTRIBUTION
-    // ==========================================================
+    
+    
+    
 
     private List<TopicDistributionDto> buildTopicDistribution(
             Long userId) {
@@ -411,9 +411,9 @@ public class DashboardServiceImpl implements DashboardService {
         return result;
     }
 
-    // ==========================================================
-    // SKILL RADAR
-    // ==========================================================
+    
+    
+    
 
     private List<SkillRadarDto> buildSkillRadar(Long userId) {
 
@@ -509,17 +509,17 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
 
-    // ==========================================================
-    // ACTIVITIES
-    // ==========================================================
+    
+    
+    
 
     private List<ActivityDto> buildActivities(Long userId) {
 
         List<ActivityDto> activities = new ArrayList<>();
 
-        // ------------------------------------
-        // Resume Activity
-        // ------------------------------------
+        
+        
+        
 
         Resume latestResume =
                 resumeRepository
@@ -543,9 +543,9 @@ public class DashboardServiceImpl implements DashboardService {
             );
         }
 
-        // ------------------------------------
-        // Interview Activity
-        // ------------------------------------
+        
+        
+        
 
         List<InterviewSession> interviews =
                 interviewSessionRepository
@@ -575,9 +575,9 @@ public class DashboardServiceImpl implements DashboardService {
 
                 );
 
-        // ------------------------------------
-        // Coding Activity
-        // ------------------------------------
+        
+        
+        
 
         List<UserQuestionProgress> solved =
                 progressRepository
@@ -614,9 +614,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .toList();
     }
 
-    // ==========================================================
-    // UPCOMING TASKS
-    // ==========================================================
+    
+    
+    
 
     private List<UpcomingTaskDto> buildUpcomingTasks(Long userId) {
 
@@ -639,9 +639,9 @@ public class DashboardServiceImpl implements DashboardService {
         int skills =
                 skillRepository.findByUserId(userId).size();
 
-        // -----------------------------------------
-        // Resume Improvement
-        // -----------------------------------------
+        
+        
+        
 
         if (latestResume == null) {
 
@@ -669,9 +669,9 @@ public class DashboardServiceImpl implements DashboardService {
             );
         }
 
-        // -----------------------------------------
-        // Interview
-        // -----------------------------------------
+        
+        
+        
 
         if (interviewScore == null || interviewScore < 75) {
 
@@ -688,9 +688,9 @@ public class DashboardServiceImpl implements DashboardService {
             );
         }
 
-        // -----------------------------------------
-        // Coding
-        // -----------------------------------------
+        
+        
+        
 
         if (totalQuestions > 0) {
 
@@ -709,9 +709,9 @@ public class DashboardServiceImpl implements DashboardService {
             }
         }
 
-        // -----------------------------------------
-        // Skills
-        // -----------------------------------------
+        
+        
+        
 
         if (skills < 8) {
 
@@ -749,9 +749,9 @@ public class DashboardServiceImpl implements DashboardService {
         return 0.0;
     }
 
-    // ==========================================================
-    // HELPERS
-    // ==========================================================
+    
+    
+    
 
     private int calculateXP(
             int solved,

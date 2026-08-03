@@ -76,12 +76,7 @@ public class RagRoleExpectationRetriever
             String role
     ) {
 
-        /*
-         * This is a retrieval query, NOT an LLM prompt.
-         *
-         * We are searching the existing vector knowledge base
-         * for documents relevant to this company + role.
-         */
+        
         return """
                 Company: %s
                 Role: %s
@@ -128,17 +123,7 @@ public class RagRoleExpectationRetriever
         Map<String, Object> metadata =
                 document.getMetadata();
 
-        /*
-         * CONNECT THIS TO YOUR EXISTING RAG METADATA.
-         *
-         * Recommended vector-document metadata:
-         *
-         * company
-         * role
-         * keyword
-         * category
-         * importance
-         */
+        
         String keyword = metadataString(
                 metadata,
                 "keyword"
@@ -154,10 +139,7 @@ public class RagRoleExpectationRetriever
         String documentRole =
                 metadataString(metadata, "role");
 
-        /*
-         * Prevent semantically similar but unrelated companies/roles
-         * from becoming requirements.
-         */
+        
         if (!matchesRequestedContext(
                 requestedCompany,
                 requestedRole,
@@ -199,10 +181,7 @@ public class RagRoleExpectationRetriever
             String documentRole
     ) {
 
-        /*
-         * For reliable company-specific analysis, retrieved
-         * documents must contain company/role metadata.
-         */
+        
         if (documentCompany == null
                 || documentRole == null) {
             return false;

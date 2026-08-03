@@ -27,9 +27,9 @@ public class InterviewAiService {
     private final VectorStore vectorStore;
 
 
-    // ==========================================
-    // GENERATE ADAPTIVE QUESTION
-    // ==========================================
+    
+    
+    
 
     public String generateQuestion(
             InterviewSession session,
@@ -314,9 +314,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // TECHNICAL EVALUATION
-    // ==========================================
+    
+    
+    
 
     public String evaluateTechnical(
             InterviewSession session,
@@ -484,9 +484,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // BEHAVIOURAL EVALUATION
-    // ==========================================
+    
+    
+    
 
     public String evaluateBehavioural(
             InterviewSession session,
@@ -501,10 +501,7 @@ public class InterviewAiService {
                 );
 
 
-        /*
-         * Q1 "Tell me about yourself" is not
-         * evaluated using STAR.
-         */
+        
 
         if (isIntroductionQuestion(question)) {
 
@@ -526,9 +523,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // INTRODUCTION EVALUATION
-    // ==========================================
+    
+    
+    
 
     private String evaluateIntroduction(
             InterviewSession session,
@@ -760,9 +757,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // STAR BEHAVIOURAL EVALUATION
-    // ==========================================
+    
+    
+    
 
     private String evaluateStarBehavioural(
             InterviewSession session,
@@ -998,9 +995,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // INTRODUCTION DETECTION
-    // ==========================================
+    
+    
+    
 
     private boolean isIntroductionQuestion(
             InterviewQuestion question
@@ -1039,9 +1036,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // MANUAL FOLLOW-UP
-    // ==========================================
+    
+    
+    
 
     public String generateFollowUp(
             InterviewSession session,
@@ -1169,9 +1166,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // RAG RETRIEVAL
-    // ==========================================
+    
+    
+    
 
     public RagContext retrieveContext(
             InterviewSession session,
@@ -1207,9 +1204,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // JOB DESCRIPTION RAG
-    // ==========================================
+    
+    
+    
 
     private String retrieveJobDescription(
             InterviewSession session,
@@ -1246,9 +1243,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // COMPANY RAG
-    // ==========================================
+    
+    
+    
 
     private String retrieveCompanyContext(
             InterviewSession session,
@@ -1298,9 +1295,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // QUESTION RETRIEVAL QUERY
-    // ==========================================
+    
+    
+    
 
     private String buildQuestionRetrievalQuery(
             InterviewSession session,
@@ -1341,9 +1338,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // HELPERS
-    // ==========================================
+    
+    
+    
 
     private String joinDocuments(
             List<Document> documents
@@ -1433,9 +1430,9 @@ public class InterviewAiService {
     }
 
 
-    // ==========================================
-    // RAG CONTEXT
-    // ==========================================
+    
+    
+    
 
     public record RagContext(
             String jobDescription,

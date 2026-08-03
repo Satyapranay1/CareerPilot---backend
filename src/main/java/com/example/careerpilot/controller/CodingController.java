@@ -21,9 +21,9 @@ public class CodingController {
         this.codingService = codingService;
     }
 
-    // ---------------------------------------------------------
-    // CATALOG
-    // ---------------------------------------------------------
+    
+    
+    
 
     @GetMapping
     public ResponseEntity<CodingResponse> getCatalog(
@@ -36,9 +36,9 @@ public class CodingController {
         );
     }
 
-    // ---------------------------------------------------------
-    // TOPIC DETAILS
-    // ---------------------------------------------------------
+    
+    
+    
 
     @GetMapping("/topics/{topicId}")
     public ResponseEntity<CodingResponse.TopicDetails>
@@ -54,9 +54,9 @@ public class CodingController {
         );
     }
 
-    // ---------------------------------------------------------
-    // SEARCH / FILTER
-    // ---------------------------------------------------------
+    
+    
+    
 
     @GetMapping("/questions")
     public ResponseEntity<CodingResponse.QuestionPage>
@@ -103,9 +103,9 @@ public class CodingController {
         );
     }
 
-    // ---------------------------------------------------------
-    // SOLVED CHECKBOX
-    // ---------------------------------------------------------
+    
+    
+    
 
     @PutMapping("/questions/{questionId}/solved")
     public ResponseEntity<Map<String, Boolean>>
@@ -132,9 +132,9 @@ public class CodingController {
         );
     }
 
-    // ---------------------------------------------------------
-    // PROGRESS
-    // ---------------------------------------------------------
+    
+    
+    
 
     @GetMapping("/progress")
     public ResponseEntity<CodingResponse.Progress>
