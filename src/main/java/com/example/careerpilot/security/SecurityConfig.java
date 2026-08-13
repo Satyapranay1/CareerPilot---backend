@@ -59,11 +59,11 @@ public class SecurityConfig {
                         .authenticated()
 
                         // Interview Module
-                        .requestMatchers("/api/interviews/**")
+                        .requestMatchers("/api/v1/interviews/**")
                         .authenticated()
 
                         // Questions Module
-                        .requestMatchers("/api/questions/**")
+                        .requestMatchers("/api/v1/coding/**")
                         .authenticated()
 
                         // Profile Module
@@ -90,7 +90,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "http://localhost:8081"
         ));
 
         configuration.setAllowedMethods(List.of(

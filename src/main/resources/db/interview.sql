@@ -216,3 +216,15 @@ SELECT COUNT(*) FROM vector_store;
 
 SELECT *
 FROM vector_store;
+
+SELECT
+    version(),
+    current_database(),
+    current_user,
+    inet_server_port();
+
+SELECT name, default_version, installed_version
+FROM pg_available_extensions
+WHERE name = 'vector';
+
+SELECT * FROM pg_extension;

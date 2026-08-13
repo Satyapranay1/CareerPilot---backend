@@ -1249,61 +1249,53 @@ public class InterviewService {
     // AI JSON PARSING
     // ==========================================
 
-    private JsonNode parseEvaluation(
-            String response
-    ) {
+    private JsonNode parseEvaluation(String response) {
 
-        if (response == null
-                || response.isBlank()) {
-
+        if (response == null || response.isBlank()) {
             throw new RuntimeException(
                     "AI returned an empty evaluation"
             );
         }
 
-
         try {
 
-            String cleaned =
-                    response
-                            .replace(
-                                    "```json",
-                                    ""
-                            )
+            String cleaned = response.trim();
 
-                            .replace(
-                                    "```JSON",
-                                    ""
-                            )
+            // Remove markdown code fences
+            cleaned = cleaned
+                    .replace("```json", "")
+                    .replace("```JSON", "")
+                    .replace("```", "")
+                    .trim();
 
-                            .replace(
-                                    "```",
-                                    ""
-                            )
+            // Extract JSON object if AI added text around it
+            int firstBrace = cleaned.indexOf('{');
+            int lastBrace = cleaned.lastIndexOf('}');
 
-                            .trim();
+            if (firstBrace < 0 || lastBrace <= firstBrace) {
 
-
-            int firstBrace =
-                    cleaned.indexOf('{');
-
-            int lastBrace =
-                    cleaned.lastIndexOf('}');
-
-
-            if (firstBrace >= 0
-                    && lastBrace > firstBrace) {
-
-                cleaned =
-                        cleaned.substring(
-                                firstBrace,
-                                lastBrace + 1
-                        );
+                throw new RuntimeException(
+                        "AI did not return valid JSON. Raw response: "
+                                + cleaned
+                );
             }
 
+            cleaned = cleaned.substring(
+                    firstBrace,
+                    lastBrace + 1
+            );
 
-            return objectMapper
-                    .readTree(cleaned);
+            JsonNode json =
+                    objectMapper.readTree(cleaned);
+
+            if (json == null || !json.isObject()) {
+
+                throw new RuntimeException(
+                        "AI evaluation is not a JSON object"
+                );
+            }
+
+            return json;
 
         } catch (Exception exception) {
 

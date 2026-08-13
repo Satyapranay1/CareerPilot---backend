@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 @Component
@@ -64,8 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token =
                 authHeader.substring(7);
-
-
+        System.out.println(
+                "JWT received: "
+                        + !token.isBlank()
+        );
         // ==========================================
         // 4. VALIDATE JWT
         // ==========================================
@@ -182,8 +185,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println(
+                    "JWT authentication failed: "
+                            + e.getMessage()
+            );
 
+            e.printStackTrace();
             /*
              * Invalid token subject,
              * missing user, etc.

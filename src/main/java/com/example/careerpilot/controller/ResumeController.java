@@ -3,10 +3,13 @@ package com.example.careerpilot.controller;
 import com.example.careerpilot.dto.ResumeAnalysisDTO;
 import com.example.careerpilot.dto.ResumeHistoryDTO;
 import com.example.careerpilot.dto.ResumeResponse;
+import com.example.careerpilot.model.User;
+import com.example.careerpilot.repo.UserRepo;
 import com.example.careerpilot.service.ResumeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,25 +21,28 @@ import java.util.List;
 public class ResumeController {
 
     private final ResumeService resumeService;
+    private final UserRepo userRepo;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResumeResponse> uploadResume(
 
             @RequestParam MultipartFile file,
 
-            @RequestParam Long userId,
-
             @RequestParam String company,
 
             @RequestParam String jobRole,
 
-            @RequestParam(required = false) String jobDescription
+            @RequestParam(required = false) String jobDescription,
+
+            Authentication authentication
     ) {
+
+        User user = getCurrentUser(authentication);
 
         return ResponseEntity.ok(
                 resumeService.uploadResume(
                         file,
-                        userId,
+                        user.getId(),
                         company,
                         jobRole,
                         jobDescription
@@ -46,13 +52,37 @@ public class ResumeController {
 
     @GetMapping
     public ResponseEntity<List<ResumeHistoryDTO>> getHistory(
-
-            @RequestParam Long userId
+            Authentication authentication
     ) {
 
+        User user = getCurrentUser(authentication);
+
         return ResponseEntity.ok(
-                resumeService.getHistory(userId)
+                resumeService.getHistory(user.getId())
         );
+    }
+
+    private User getCurrentUser(
+            Authentication authentication
+    ) {
+
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
+
+            throw new IllegalStateException(
+                    "User is not authenticated"
+            );
+        }
+
+        String email = authentication.getName();
+
+        return userRepo
+                .findByEmail(email)
+                .orElseThrow(
+                        () -> new IllegalStateException(
+                                "Authenticated user not found"
+                        )
+                );
     }
 
     @GetMapping("/{id}")

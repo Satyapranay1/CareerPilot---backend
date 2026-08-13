@@ -4,7 +4,7 @@ import com.example.careerpilot.model.InterviewType;
 
 public record QuestionResponse(
 
-        Long questionId,
+        Long id,
 
         String question,
 

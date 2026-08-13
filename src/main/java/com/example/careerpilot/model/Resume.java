@@ -37,17 +37,27 @@ public class Resume {
     @Column(name = "job_role")
     private String jobRole;
 
-    @Lob
-    @Column(name = "resume_text", nullable = false, columnDefinition = "TEXT")
+    @Column(
+            name = "resume_text",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String resumeText;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(
+            name = "analysis_json",
+            columnDefinition = "jsonb"
+    )
     private JsonNode analysisJson;
 
     @Column(name = "ats_score")
     private BigDecimal atsScore;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(
+            name = "created_at",
+            insertable = false,
+            updatable = false
+    )
     private LocalDateTime createdAt;
 }

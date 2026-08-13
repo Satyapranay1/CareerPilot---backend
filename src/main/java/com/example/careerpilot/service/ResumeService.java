@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -112,7 +113,7 @@ public class ResumeService {
 
             response.setAtsScore(ats);
 
-            JsonNode analysisJson = objectMapper.valueToTree(aiResponse);
+            JsonNode analysisJson = objectMapper.readTree(aiResponse);
 
             saveResume(
                     userId,
@@ -148,23 +149,54 @@ public class ResumeService {
 
         try {
 
-            ResumeResponse analysis = objectMapper.treeToValue(
-                    resume.getAnalysisJson(),
-                    ResumeResponse.class
-            );
+            JsonNode analysisJson =
+                    resume.getAnalysisJson();
+
+            if (analysisJson == null ||
+                    analysisJson.isNull()) {
+
+                throw new RuntimeException(
+                        "Resume analysis is empty"
+                );
+            }
+
+            ResumeResponse analysis;
+
+            if (analysisJson.isTextual()) {
+
+                analysis = objectMapper.readValue(
+                        analysisJson.asText(),
+                        ResumeResponse.class
+                );
+
+            } else {
+
+                analysis = objectMapper.treeToValue(
+                        analysisJson,
+                        ResumeResponse.class
+                );
+            }
 
             return ResumeAnalysisDTO.builder()
                     .id(resume.getId())
                     .fileName(resume.getFileName())
                     .company(resume.getCompany())
                     .jobRole(resume.getJobRole())
-                    .knowledgeSource(analysis.getKnowledgeSource())
+                    .knowledgeSource(
+                            analysis.getKnowledgeSource()
+                    )
                     .atsScore(resume.getAtsScore())
                     .uploadedAt(resume.getCreatedAt())
                     .analysis(analysis)
                     .build();
 
         } catch (Exception e) {
+
+            log.error(
+                    "Unable to parse analysis for resume {}",
+                    id,
+                    e
+            );
 
             throw new RuntimeException(
                     "Unable to parse resume analysis",
@@ -719,7 +751,7 @@ The last character MUST be }
             response.setAtsScore(ats);
 
             JsonNode analysisJson =
-                    objectMapper.valueToTree(aiResponse);
+                    objectMapper.readTree(aiResponse);
 
             resume.setCompany(company);
             resume.setJobRole(jobRole);
@@ -778,6 +810,7 @@ The last character MUST be }
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ResumeHistoryDTO> getHistory(Long userId) {
 
         List<Resume> resumes =
