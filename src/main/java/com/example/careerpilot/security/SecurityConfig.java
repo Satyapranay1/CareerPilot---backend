@@ -67,7 +67,7 @@ public class SecurityConfig {
                         .authenticated()
 
                         // Profile Module
-                        .requestMatchers("/api/profile/**")
+                        .requestMatchers("/api/v1/profile/**")
                         .authenticated()
 
                         // Everything else
