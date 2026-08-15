@@ -37,9 +37,6 @@ public class ResumeService {
     private final KnowledgeService knowledgeService;
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
-    private static final int MAX_RESUME_CHARS = 12000;
-    private static final int MAX_KNOWLEDGE_CHARS = 6000;
-    private static final int MAX_JOB_DESCRIPTION_CHARS = 5000;
 
     @Value("${resume.upload-path:uploads/resumes}")
     private String uploadPath;
@@ -74,7 +71,7 @@ public class ResumeService {
             // Load Prompt
             String prompt = buildPrompt(
                     knowledge,
-                    jobDescription
+                    resumeText
             );
 
             log.info("=========== FINAL PROMPT ===========");
@@ -116,7 +113,7 @@ public class ResumeService {
 
             response.setAtsScore(ats);
 
-            JsonNode analysisJson = objectMapper.valueToTree(aiResponse);
+            JsonNode analysisJson = objectMapper.readTree(aiResponse);
 
             saveResume(
                     userId,
@@ -210,218 +207,385 @@ public class ResumeService {
 
     private String buildPrompt(
             KnowledgeContext knowledge,
-            String jobDescription
-    ) {
-
-        String companyKnowledge = limitText(
-                knowledge.content(),
-                MAX_KNOWLEDGE_CHARS
-        );
-
-        String limitedJobDescription = limitText(
-                jobDescription,
-                MAX_JOB_DESCRIPTION_CHARS
-        );
+            String resumeText) {
 
         return """
-            You are an expert ATS resume reviewer and technical recruiter.
+You are an expert Technical Recruiter, ATS Resume Expert, Hiring Manager, Career Coach, and Senior Software Engineer with extensive experience hiring software engineers for enterprise technology companies.
 
-            Analyze the candidate resume against the TARGET ROLE and JOB DESCRIPTION.
+Your task is to perform an objective, evidence-based evaluation of a candidate's resume.
 
-            IMPORTANT:
-            - Use only information supported by the resume and provided context.
-            - Never invent skills, experience, projects, companies, education, or achievements.
-            - Evaluate the candidate specifically for the target role.
-            - Do not treat unrelated technologies as role-relevant.
-            - Keep responses concise.
-            - Return ONLY valid JSON.
-            - Do not use markdown.
-            - Do not add text outside JSON.
+=========================================================================
+KNOWLEDGE SOURCE
+=========================================================================
 
-            KNOWLEDGE SOURCE:
-            %s
+Knowledge Source:
+%s
 
-            RELEVANT KNOWLEDGE:
-            %s
+Knowledge Context:
+%s
 
-            JOB DESCRIPTION:
-            %s
+=========================================================================
+RESUME
+=========================================================================
 
-            Return JSON matching this EXACT structure:
+%s
 
-            {
-              "knowledgeSource": "",
-              "summary": "",
-              "atsScore": 0,
+=========================================================================
+EVALUATION RULES
+=========================================================================
 
-              "scores": {
-                "keywordMatch": 0,
-                "impact": 0,
-                "readability": 0,
-                "grammar": 0,
-                "structure": 0
-              },
+First determine the evaluation context.
 
-              "strongAreas": [],
-              "weakAreas": [],
-              "missingKeywords": [],
-              "missingSkills": [],
-              "improvementSuggestions": [],
+If Knowledge Source = RAG
 
-              "roleRelevantSkills": [],
-              "missingRoleSkills": [],
-              "roleSpecificInsights": [],
+• Use ONLY the supplied Knowledge Context as the hiring requirements.
+• Do not make assumptions beyond the retrieved knowledge.
 
-              "roleFit": {
-                "score": 0,
-                "level": "",
-                "explanation": ""
-              },
+If Knowledge Source = JOB_DESCRIPTION
 
-              "technologies": {
-                "programmingLanguages": [],
-                "frameworks": [],
-                "databases": [],
-                "cloud": [],
-                "devOps": [],
-                "testing": [],
-                "tools": [],
-                "other": []
-              },
+• Treat the supplied Knowledge Context as the official Job Description.
+• Evaluate the resume against it.
 
-              "skillMatch": [],
-              "skillGaps": [],
-              "skillCategories": [],
+If Knowledge Source = GENERIC
 
-              "projectAnalysis": [],
-              "experienceAnalysis": [],
-              "achievementAnalysis": [],
+• No company-specific hiring information exists.
+• Evaluate the resume using modern software engineering hiring best practices.
+• Clearly mention in the summary that this is a generic evaluation.
 
-              "atsAnalysis": {
-                "strengths": [],
-                "weaknesses": [],
-                "recommendations": [],
-                "keywordCoverage": 0
-              },
+Never invent skills, projects, achievements, certifications, responsibilities, or experience.
 
-              "sectionAnalysis": [],
-              "bulletAnalysis": [],
+Every observation must be directly supported by:
 
-              "careerLevel": {
-                "level": "",
-                "confidence": 0,
-                "explanation": ""
-              },
+• the resume
+or
+• the supplied hiring knowledge.
 
-              "recruiterImpression": {
-                "firstImpression": "",
-                "positives": [],
-                "concerns": [],
-                "hiringLikelihood": 0
-              },
+If evidence is unavailable, do not assume.
 
-              "interviewReadiness": {
-                "score": 0,
-                "strengths": [],
-                "technicalTopics": [],
-                "projectTopics": [],
-                "behavioralTopics": [],
-                "preparationSuggestions": []
-              },
+=========================================================================
+SCORING
+=========================================================================
 
-              "redFlags": [],
-              "priorityMatrix": [],
+Return integer scores between 0 and 100.
 
-              "actionPlan": {
-                "immediate": [],
-                "shortTerm": [],
-                "mediumTerm": []
-              }
-            }
+Evaluate ONLY:
 
-            RULES:
-            - All scores must be between 0 and 100.
-            - atsScore = overall ATS compatibility.
-            - keywordMatch = target-role keyword coverage.
-            - roleFit.score = suitability for the target role.
-            - Keep arrays concise, normally 3-5 items.
-            - missingKeywords and missingSkills may contain up to 8 items.
-            - Keep each text item short and actionable.
-            - Do not invent missing information.
+1. Keyword Match
 
-            ROLE-SPECIFIC EVALUATION:
-            Prioritize skills required by the target role.
+Evaluate alignment for:
 
-            Example:
-            Data Scientist → Python, SQL, statistics, machine learning,
-            pandas, NumPy, scikit-learn, TensorFlow, data analysis.
+• Programming Languages
+• Frameworks
+• Databases
+• Cloud
+• DevOps
+• APIs
+• Testing
+• Security
+• Architecture
+• Tools
+• Soft Skills
 
-            Java Backend Developer → Java, Spring Boot, REST APIs,
-            PostgreSQL, JPA, microservices.
+2. Impact
 
-            Frontend Developer → JavaScript, TypeScript, React,
-            HTML, CSS, UI development.
+Evaluate:
 
-            Do not give role-relevant credit to unrelated technologies
-            simply because they exist in the resume.
-            IMPORTANT JSON TYPE RULES:
-        
-            - skillMatch MUST contain objects with:
-              skill, score, evidence
-        
-            - skillGaps MUST contain objects with:
-              skill, importance, reason, recommendation
-        
-            - skillCategories MUST contain objects with:
-              category, score, matchedSkills, missingSkills
-        
-            - projectAnalysis MUST contain objects with:
-              project, relevance, strengths, weaknesses, missingDetails, recommendations
-        
-            - experienceAnalysis MUST contain objects with:
-              company, role, relevance, strengths, weaknesses, recommendations
-        
-            - achievementAnalysis MUST contain objects with:
-              achievement, impact, strengths, recommendations
-        
-            - sectionAnalysis MUST contain objects with:
-              section, score, strengths, weaknesses, recommendations
-        
-            - bulletAnalysis MUST contain objects with:
-              original, improved, issue, impact
-        
-            - priorityMatrix MUST contain objects with:
-              item, priority, impact, effort, recommendation
-        
-            - All other arrays must contain strings unless the JSON structure explicitly shows objects.
-        
-            - NEVER replace an object with a string.
-            - NEVER replace an array of objects with an array of strings.
-            """.formatted(
-                safe(knowledge.source()),
-                companyKnowledge,
-                limitedJobDescription
+• Quantified achievements
+• Metrics
+• Ownership
+• Scale
+• Leadership
+• Business impact
+
+3. Readability
+
+Evaluate:
+
+• Formatting
+• Section ordering
+• White space
+• Bullet consistency
+• Resume flow
+
+4. Grammar
+
+Evaluate:
+
+• Grammar
+• Professional language
+• Spelling
+• Sentence clarity
+
+5. Structure
+
+Evaluate:
+
+• Overall organization
+• Experience section
+• Projects
+• Skills
+• Education
+• Certifications
+
+DO NOT calculate ATS Score.
+
+The backend calculates ATS separately.
+
+=========================================================================
+FIELD RULES
+=========================================================================
+
+SUMMARY
+
+Write 3-5 professional sentences.
+
+Include:
+
+• Overall resume quality
+• Alignment with the role
+• Biggest strengths
+• Biggest weaknesses
+• Overall hiring impression
+
+Never leave summary empty.
+
+Never exaggerate candidate experience.
+
+Never call someone "highly experienced" unless supported.
+
+=========================================================================
+STRONG AREAS
+=========================================================================
+
+Return 3-8 strengths.
+
+Each strength MUST be directly supported by the resume.
+
+Good examples
+
+Java
+
+Spring Boot
+
+REST APIs
+
+PostgreSQL
+
+Problem Solving
+
+System Design
+
+Git
+
+Team Collaboration
+
+Bad examples
+
+Excellent Developer
+
+Great Team Player
+
+Highly Skilled
+
+=========================================================================
+WEAK AREAS
+=========================================================================
+
+Return 3-8 broad improvement areas.
+
+Weak Areas describe capability gaps.
+
+Examples
+
+Limited Cloud Experience
+
+Limited Production Experience
+
+Few Quantified Achievements
+
+Limited Testing Experience
+
+Weak Project Descriptions
+
+Do NOT repeat Missing Keywords.
+
+Weak Areas Rules
+----------------
+Weak Areas represent broad capability gaps.
+
+Do NOT return technology names.
+
+Good examples:
+- Limited Cloud Experience
+- Limited Testing Experience
+- Few Quantified Achievements
+- Limited Production Deployment Experience
+
+Bad examples:
+- Docker
+- Kafka
+- Kubernetes
+
+Strong Areas Rules
+------------------
+Only include skills explicitly supported by the resume.
+Do not infer or invent expertise.
+
+Scoring Rules
+-------------
+Every score must be justified by the resume.
+Do not use default values such as 70, 80, or 90 unless the evidence supports them.
+
+Improvement Suggestions
+-----------------------
+Order suggestions from highest impact to lowest impact.
+
+=========================================================================
+MISSING KEYWORDS
+=========================================================================
+
+Return 5-15 exact ATS keywords missing from the resume.
+
+Examples
+
+Docker
+
+Kafka
+
+Redis
+
+JUnit
+
+Mockito
+
+Kubernetes
+
+CI/CD
+
+AWS
+
+Spring Security
+
+JWT
+
+These should be exact keywords.
+
+=========================================================================
+MISSING SKILLS
+=========================================================================
+
+Return 3-10 broader missing skills.
+
+Examples
+
+Cloud Deployment
+
+Container Orchestration
+
+Distributed Systems
+
+Message Queues
+
+Monitoring
+
+Performance Optimization
+
+Testing Strategy
+
+Security Best Practices
+
+Do not duplicate Missing Keywords.
+
+=========================================================================
+IMPROVEMENT SUGGESTIONS
+=========================================================================
+
+Return 5-10 highly actionable suggestions.
+
+Each suggestion should tell the candidate exactly what to improve.
+
+Good examples
+
+Add quantified achievements to every project.
+
+Mention API response time improvements.
+
+Describe project scale.
+
+Include Docker deployment.
+
+Highlight PostgreSQL optimization.
+
+Mention JUnit and Mockito testing.
+
+Add CI/CD experience if applicable.
+
+Expand project responsibilities.
+
+Bad examples
+
+Improve resume.
+
+Write better.
+
+Gain more experience.
+
+=========================================================================
+CONSISTENCY RULES
+=========================================================================
+
+Never contradict yourself.
+
+Do not duplicate values across arrays.
+
+Do not invent technologies.
+
+Do not invent projects.
+
+Do not invent achievements.
+
+Do not invent certifications.
+
+Do not leave arrays null.
+
+Return empty arrays when necessary.
+
+=========================================================================
+OUTPUT
+=========================================================================
+
+Return ONLY valid JSON.
+
+Do not explain.
+
+Do not use markdown.
+
+Do not wrap inside ```json.
+
+The first character MUST be {
+
+The last character MUST be }
+
+{
+  "summary": "",
+  "scores": {
+    "keywordMatch": 0,
+    "impact": 0,
+    "readability": 0,
+    "grammar": 0,
+    "structure": 0
+  },
+  "strongAreas": [],
+  "weakAreas": [],
+  "missingKeywords": [],
+  "missingSkills": [],
+  "improvementSuggestions": []
+}
+""".formatted(
+                knowledge.source(),
+                knowledge.content(),
+                resumeText
         );
-    }
-
-    private String limitText(String text, int maxChars) {
-
-        if (text == null || text.isBlank()) {
-            return "";
-        }
-
-        String cleaned = text.trim();
-
-        if (cleaned.length() <= maxChars) {
-            return cleaned;
-        }
-
-        return cleaned.substring(0, maxChars)
-                + "\n[Content truncated for performance]";
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
     }
 
     private double calculateATS(
@@ -487,103 +651,22 @@ public class ResumeService {
     private String cleanJson(String response) {
 
         if (response == null || response.isBlank()) {
-            throw new RuntimeException("AI returned an empty response");
+            return "";
         }
 
-        String cleaned = response.trim();
-
-        // Remove markdown code fences
-        cleaned = cleaned
-                .replaceAll("(?i)```json", "")
-                .replaceAll("(?i)```", "")
+        response = response
+                .replace("```json", "")
+                .replace("```", "")
                 .trim();
 
-        // Find the first JSON object
-        int start = cleaned.indexOf('{');
+        int start = response.indexOf('{');
+        int end = response.lastIndexOf('}');
 
-        if (start == -1) {
-            log.error("AI response does not contain JSON: {}", cleaned);
-            throw new RuntimeException(
-                    "AI did not return valid JSON"
-            );
+        if (start >= 0 && end > start) {
+            return response.substring(start, end + 1);
         }
 
-        /*
-         * Find the matching closing brace instead of simply
-         * using lastIndexOf("}").
-         *
-         * This handles cases where the AI adds text before
-         * or after the JSON.
-         */
-        int depth = 0;
-        boolean insideString = false;
-        boolean escaped = false;
-        int end = -1;
-
-        for (int i = start; i < cleaned.length(); i++) {
-
-            char c = cleaned.charAt(i);
-
-            if (escaped) {
-                escaped = false;
-                continue;
-            }
-
-            if (c == '\\' && insideString) {
-                escaped = true;
-                continue;
-            }
-
-            if (c == '"') {
-                insideString = !insideString;
-                continue;
-            }
-
-            if (insideString) {
-                continue;
-            }
-
-            if (c == '{') {
-                depth++;
-            } else if (c == '}') {
-                depth--;
-
-                if (depth == 0) {
-                    end = i;
-                    break;
-                }
-            }
-        }
-
-        if (end == -1) {
-            log.error("Invalid/incomplete JSON from AI: {}", cleaned);
-
-            throw new RuntimeException(
-                    "AI returned incomplete JSON"
-            );
-        }
-
-        String json = cleaned.substring(start, end + 1).trim();
-
-        // Validate JSON before returning it
-        try {
-
-            objectMapper.readTree(json);
-
-            return json;
-
-        } catch (Exception e) {
-
-            log.error(
-                    "AI returned invalid JSON: {}",
-                    json
-            );
-
-            throw new RuntimeException(
-                    "AI returned invalid JSON",
-                    e
-            );
-        }
+        return response;
     }
 
     public void deleteResume(Long id) {
@@ -621,42 +704,25 @@ public class ResumeService {
             String jobRole,
             String jobDescription) {
 
-        long totalStart = System.currentTimeMillis();
-
         try {
 
             Resume resume = resumeRepository.findById(id)
                     .orElseThrow(() ->
                             new RuntimeException("Resume not found"));
 
-            long knowledgeStart = System.currentTimeMillis();
-
             KnowledgeContext knowledge =
                     knowledgeService.getKnowledge(
                             company,
                             jobRole,
-                            limitText(
-                                    jobDescription,
-                                    MAX_JOB_DESCRIPTION_CHARS
-                            )
+                            jobDescription
                     );
-
-            log.info(
-                    "Resume knowledge retrieval: {} ms",
-                    System.currentTimeMillis() - knowledgeStart
-            );
 
             String prompt = buildPrompt(
                     knowledge,
                     resume.getResumeText()
             );
 
-            log.info(
-                    "Resume prompt size: {} characters",
-                    prompt.length()
-            );
-
-            long aiStart = System.currentTimeMillis();
+            log.info("Reanalyzing resume {}", id);
 
             String aiResponse = chatClient
                     .prompt()
@@ -664,18 +730,12 @@ public class ResumeService {
                     .call()
                     .content();
 
-            log.info(
-                    "Resume AI generation: {} ms",
-                    System.currentTimeMillis() - aiStart
-            );
-
             aiResponse = cleanJson(aiResponse);
 
-            ResumeResponse response =
-                    objectMapper.readValue(
-                            aiResponse,
-                            ResumeResponse.class
-                    );
+            ResumeResponse response = objectMapper.readValue(
+                    aiResponse,
+                    ResumeResponse.class
+            );
 
             response.setKnowledgeSource(
                     knowledge.source()
@@ -686,7 +746,6 @@ public class ResumeService {
             }
 
             double ats = calculateATS(response);
-
             ats = Math.round(ats * 100.0) / 100.0;
 
             response.setAtsScore(ats);
@@ -697,25 +756,17 @@ public class ResumeService {
             resume.setCompany(company);
             resume.setJobRole(jobRole);
             resume.setAnalysisJson(analysisJson);
-            resume.setAtsScore(
-                    BigDecimal.valueOf(ats)
-            );
+            resume.setAtsScore(BigDecimal.valueOf(ats));
 
             resumeRepository.save(resume);
 
-            log.info(
-                    "Total resume analysis time: {} ms",
-                    System.currentTimeMillis() - totalStart
-            );
+            log.info("Resume {} reanalyzed successfully", id);
 
             return response;
 
         } catch (Exception ex) {
 
-            log.error(
-                    "Resume reanalysis failed",
-                    ex
-            );
+            log.error("Resume reanalysis failed", ex);
 
             throw new RuntimeException(
                     "Unable to reanalyze resume",
