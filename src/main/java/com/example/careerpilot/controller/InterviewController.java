@@ -8,6 +8,7 @@ import com.example.careerpilot.service.InterviewService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -203,6 +204,18 @@ public class InterviewController {
                         sessionId,
                         user
                 );
+    }
+
+    @GetMapping("/{id}/answers")
+    public ResponseEntity<List<AnswerEvaluationResponse>> getAnswers(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        User user = getCurrentUser(authentication);
+
+        return ResponseEntity.ok(
+                interviewService.getAnswers(id, user)
+        );
     }
 
 

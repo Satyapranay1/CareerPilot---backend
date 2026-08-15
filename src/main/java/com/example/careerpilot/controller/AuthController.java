@@ -151,11 +151,11 @@ public class AuthController {
                 user.getEmail(),
                 user.getShortBio(),
                 user.getRole().name(),
+                user.getProfilePicture(),
                 educationRepo.findByUserId(user.getId()),
                 experienceRepo.findByUserId(user.getId()),
                 skillRepo.findByUserId(user.getId())
         );
-
         return ResponseEntity.ok(response);
     }
 

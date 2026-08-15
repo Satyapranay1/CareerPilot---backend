@@ -1092,6 +1092,20 @@ public class InterviewService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<AnswerEvaluationResponse> getAnswers(
+            Long sessionId,
+            User user
+    ) {
+        getSession(sessionId, user);
+
+        return attemptRepository
+                .findByQuestionSessionIdOrderByAnsweredAtAsc(sessionId)
+                .stream()
+                .map(this::mapAttempt)
+                .toList();
+    }
+
 
     // ==========================================
     // DETERMINE QUESTION TYPE
@@ -1316,31 +1330,34 @@ public class InterviewService {
             String field
     ) {
 
-        JsonNode value =
-                json.get(field);
+        JsonNode value = json.get(field);
 
-
-        if (value == null
-                || value.isNull()
-                || !value.isNumber()) {
-
+        if (value == null || value.isNull()) {
             return null;
         }
 
+        if (!value.isNumber()) {
+            throw new IllegalStateException(
+                    "AI returned non-numeric score for: " + field
+            );
+        }
 
-        double result =
-                value.asDouble();
+        double result = value.asDouble();
 
+        if (Double.isNaN(result) || Double.isInfinite(result)) {
+            throw new IllegalStateException(
+                    "Invalid score for: " + field
+            );
+        }
 
-        result =
-                Math.max(
-                        0,
-                        Math.min(
-                                10,
-                                result
-                        )
-                );
-
+        if (result < 0 || result > 10) {
+            throw new IllegalStateException(
+                    "Score out of range for "
+                            + field
+                            + ": "
+                            + result
+            );
+        }
 
         return round(result);
     }

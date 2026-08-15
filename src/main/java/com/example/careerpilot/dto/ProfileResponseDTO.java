@@ -22,6 +22,8 @@ public class ProfileResponseDTO {
 
     private String role;
 
+    private String profilePicture;
+
     private List<Education> education;
 
     private List<Experience> experience;
